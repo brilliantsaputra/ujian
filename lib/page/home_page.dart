@@ -342,7 +342,7 @@ class _HomePageState extends State<HomePage> {
                                           style: TextStyle(
                                             fontSize: 10,
                                             color: Colors.red,
-                                          ),
+                                          )
                                         ),
                                       ],
                                     ),

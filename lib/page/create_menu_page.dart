@@ -5,7 +5,9 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class CreateMenuPage extends StatefulWidget {
-  const CreateMenuPage({super.key});
+  const CreateMenuPage({
+    super.key,
+  });
 
   @override
   State<CreateMenuPage> createState() => _CreateMenuPageState();
@@ -30,8 +32,7 @@ class _CreateMenuPageState extends State<CreateMenuPage> {
   ];
 
   void createData() async {
-    CollectionReference pesanan =
-        FirebaseFirestore.instance.collection('menu');
+    CollectionReference pesanan = FirebaseFirestore.instance.collection('menu');
     await pesanan.add({
       'Nama': namaCtrl.text,
       'Harga': int.tryParse(hargaCtrl.text) ?? 0,

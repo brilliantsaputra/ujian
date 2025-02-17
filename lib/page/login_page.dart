@@ -46,9 +46,11 @@ class _LoginPageState extends State<LoginPage> {
     Map data = await checkUser(email);
 
     if (data.isEmpty) {
-      log('USER TIDAK DITEMUKAN');
+      Get.snackbar("Error", "USER TIDAK DITEMUKAN",
+          backgroundColor: Colors.blue, colorText: Colors.white);
     } else if (password != data['password']) {
-      log('PASSWORD SALAH');
+      Get.snackbar("Error", "PASSWORD SALAH",
+          backgroundColor: Colors.blue, colorText: Colors.white);
     } else {
       box.write('email', email);
       Get.offAll(() => const HomePage());
@@ -83,6 +85,8 @@ class _LoginPageState extends State<LoginPage> {
                   validator: (value) {
                     if (value == null || value.isEmpty) {
                       return 'email harus diisi';
+                     } else {
+                    ('Email tidak sama');
                     }
                     return null;
                   },
@@ -100,7 +104,7 @@ class _LoginPageState extends State<LoginPage> {
                     if (value == null || value.isEmpty) {
                       return 'password harus diisi';
                     } else {
-                      log('PASSWORD TIDAK SAMA');
+                    ('PASSWORD TIDAK SAMA');
                     }
                     return null;
                   },
