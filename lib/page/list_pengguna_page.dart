@@ -45,6 +45,7 @@ class _ListPenggunaPageState extends State<ListPenggunaPage> {
 
       totalPendapatan = querySnapshot.docs.fold(
         0,
+        // ignore: avoid_types_as_parameter_names
         (sum, doc) => sum + (doc.data()['Total'] as int),
       );
 
@@ -54,6 +55,7 @@ class _ListPenggunaPageState extends State<ListPenggunaPage> {
       log("Error: $e");
     }
   }
+  
 
   @override
   Widget build(BuildContext context) {

@@ -152,7 +152,7 @@ class _RegisterPageState extends State<RegisterPage> {
                     border: OutlineInputBorder(),
                     hintText: 'Konfirmasi Password',
                   ),
-                ),
+                ), 
                 const SizedBox(
                   height: 32,
                 ),

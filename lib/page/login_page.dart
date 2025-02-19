@@ -109,6 +109,7 @@ class _LoginPageState extends State<LoginPage> {
                     return null;
                   },
                   controller: passwordController,
+                  obscureText: true,
                   decoration: const InputDecoration(
                     border: OutlineInputBorder(),
                     hintText: 'Password',

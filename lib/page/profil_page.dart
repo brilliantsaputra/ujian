@@ -11,8 +11,9 @@ class ProfilePage extends StatefulWidget {
 
 class _ProfilePageState extends State<ProfilePage> {
   final GetStorage box = GetStorage();
+  final TextEditingController _nameController = TextEditingController();
 
-  Future<Map<String, dynamic>> fetchUserProfile() async { 
+  Future<Map<String, dynamic>> fetchUserProfile() async {
     try {
       final email = box.read('email');
       if (email == null) {
@@ -20,19 +21,66 @@ class _ProfilePageState extends State<ProfilePage> {
       }
 
       final firestore = FirebaseFirestore.instance;
-      final querySnapshot = await firestore
-          .collection('user') 
-          .where('email', isEqualTo: email)
-          .get();
+      final querySnapshot = await firestore.collection('user').where('email', isEqualTo: email).get();
 
       if (querySnapshot.docs.isEmpty) {
-        throw Exception('penguna tidak ditemukan');
+        throw Exception('Pengguna tidak ditemukan');
       }
 
       return querySnapshot.docs[0].data();
     } catch (e) {
-      throw Exception("kesalahan pengambilan data: $e");
+      throw Exception("Kesalahan pengambilan data: $e");
     }
+  }
+
+  Future<void> updateUserName(String newName) async {
+    try {
+      final email = box.read('email');
+      if (email == null) return;
+
+      final firestore = FirebaseFirestore.instance;
+      final querySnapshot = await firestore.collection('user').where('email', isEqualTo: email).get();
+
+      if (querySnapshot.docs.isNotEmpty) {
+        final docId = querySnapshot.docs[0].id;
+        await firestore.collection('user').doc(docId).update({'nama': newName});
+        setState(() {});
+      }
+    } catch (e) {
+      // ignore: use_build_context_synchronously
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Gagal memperbarui nama: $e')),
+      );
+    }
+  }
+
+  void _showEditNameDialog(String currentName) {
+    _nameController.text = currentName;
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('Edit Nama'),
+          content: TextField(
+            controller: _nameController,
+            decoration: const InputDecoration(hintText: 'Masukkan nama baru'),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Batal'),
+            ),
+            TextButton(
+              onPressed: () {
+                updateUserName(_nameController.text);
+                Navigator.pop(context);
+              },
+              child: const Text('Simpan'),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   @override
@@ -100,6 +148,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 }
 
                 final userData = snapshot.data!;
+                final userName = userData['nama'] ?? '-';
 
                 return Padding(
                   padding: const EdgeInsets.all(16.0),
@@ -115,18 +164,28 @@ class _ProfilePageState extends State<ProfilePage> {
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           const CircleAvatar(
-                        radius: 50,
-                        backgroundImage: AssetImage('assets/gura.jpg'), 
-                      ),
+                            radius: 50,
+                            backgroundImage: AssetImage('assets/profile.png'),
+                          ),
+                          const SizedBox(height: 16),
+                          // const Text(
+                          //   'User Profile',
+                          //   style: TextStyle(
+                          //     fontSize: 24,
+                          //     fontWeight: FontWeight.bold,
+                          //     color: Colors.black87,
+                          //   ),
+                          // ),
                           const Divider(
                             thickness: 1.5,
                             color: Colors.grey,
                             height: 32,
                           ),
-                          // const SizedBox(height: 16),
-              
-                          buildProfileInfoRow(Icons.account_circle,'Nama',userData['nama']?? '-'),
-                          // const SizedBox(height: 16),
+                          GestureDetector(
+                            onTap: () => _showEditNameDialog(userName),
+                            child: buildProfileInfoRow(
+                                Icons.account_circle, 'Nama', userName, true),
+                          ),
                           const Divider(
                             thickness: 1.5,
                             color: Colors.grey,
@@ -134,7 +193,6 @@ class _ProfilePageState extends State<ProfilePage> {
                           ),
                           buildProfileInfoRow(
                               Icons.email, 'Email', userData['email'] ?? '-'),
-                          // const SizedBox(height: 16),
                           const Divider(
                             thickness: 1.5,
                             color: Colors.grey,
@@ -153,7 +211,7 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
-  Widget buildProfileInfoRow(IconData icon, String title, String info) {
+  Widget buildProfileInfoRow(IconData icon, String title, String info, [bool editable = false]) {
     return Row(
       children: [
         Icon(icon, color: Colors.orangeAccent, size: 28),
@@ -170,12 +228,22 @@ class _ProfilePageState extends State<ProfilePage> {
               ),
             ),
             const SizedBox(height: 4),
-            Text(
-              info,
-              style: const TextStyle(
-                fontSize: 16,
-                color: Colors.black87,
-              ),
+            Row(
+              children: [
+                Text(
+                  info,
+                  style: const TextStyle(
+                    fontSize: 16,
+                    color: Colors.black87,
+                  ),
+                ),
+                const SizedBox(width: 8),
+                if (editable)
+                  GestureDetector(
+                    onTap: () => _showEditNameDialog(info),
+                    child: const Icon(Icons.edit, size: 20, color: Colors.blueAccent),
+                  ),
+              ],
             ),
           ],
         ),

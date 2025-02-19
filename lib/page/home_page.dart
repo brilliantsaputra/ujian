@@ -62,6 +62,8 @@ class _HomePageState extends State<HomePage> {
   }
 
   TextEditingController filterController = TextEditingController();
+  TextEditingController nameController = TextEditingController();
+  TextEditingController priceController = TextEditingController();
 
   GetStorage box = GetStorage();
   List filter = [];
@@ -90,6 +92,56 @@ class _HomePageState extends State<HomePage> {
                 Navigator.pop(context);
               },
               child: const Text('Iya'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void editFirebase(String docId, String newName, String newPrice) async {
+    final firestore = FirebaseFirestore.instance;
+    await firestore.collection('menu').doc(docId).update({
+      'Nama': newName,
+      'Harga': newPrice,
+    });
+    getDataMenu();
+    log('Edit Success');
+  }
+
+  void showEditDialog(String docId, String currentName, String currentPrice) {
+    nameController.text = currentName;
+    priceController.text = currentPrice;
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('Edit Menu'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextField(
+                controller: nameController,
+                decoration: const InputDecoration(hintText: 'Nama Baru'),
+              ),
+              TextField(
+                controller: priceController,
+                decoration: const InputDecoration(hintText: 'Harga Baru'),
+                keyboardType: TextInputType.number,
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Batal'),
+            ),
+            TextButton(
+              onPressed: () {
+                editFirebase(docId, nameController.text, priceController.text);
+                Navigator.pop(context);
+              },
+              child: const Text('Simpan'),
             ),
           ],
         );
@@ -326,26 +378,53 @@ class _HomePageState extends State<HomePage> {
                                 ),
                                 const SizedBox(height: 4),
                                 if (email == 'admin@gmail.com')
-                                  InkWell(
-                                    onTap: () {
-                                      validasiDelete(id[index]);
-                                    },
-                                    child: const Row(
-                                      children: [
-                                        Icon(
-                                          Icons.delete,
-                                          color: Colors.red,
+                                  Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      InkWell(
+                                        onTap: () {
+                                          validasiDelete(id[index]);
+                                        },
+                                        child: const Row(
+                                          children: [
+                                            Icon(
+                                              Icons.delete,
+                                              color: Colors.red,
+                                            ),
+                                            SizedBox(width: 4),
+                                            Text('Hapus Menu',
+                                                style: TextStyle(
+                                                  fontSize: 10,
+                                                  color: Colors.red,
+                                                )),
+                                          ],
                                         ),
-                                        SizedBox(width: 4),
-                                        Text(
-                                          'Hapus Menu Ini',
-                                          style: TextStyle(
-                                            fontSize: 10,
-                                            color: Colors.red,
-                                          )
+                                      ),
+                                      const SizedBox(height: 4),
+                                      InkWell(
+                                        onTap: () {
+                                          showEditDialog(
+                                            id[index],
+                                            idata['Nama'],
+                                            idata['Harga'].toString(),
+                                          );
+                                        },
+                                        child: const Row(
+                                          children: [
+                                            Icon(
+                                              Icons.edit,
+                                              color: Colors.blue,
+                                            ),
+                                            SizedBox(width: 4),
+                                            Text('Edit Menu',
+                                                style: TextStyle(
+                                                  fontSize: 10,
+                                                  color: Colors.blue,
+                                                )),
+                                          ],
                                         ),
-                                      ],
-                                    ),
+                                      ),
+                                    ],
                                   ),
                               ],
                             ),

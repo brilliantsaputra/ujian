@@ -54,6 +54,7 @@ class _HistoryPageState extends State<HistoryPage> {
 
         totalPendapatan = querySnapshot.docs.fold(
           0,
+          // ignore: avoid_types_as_parameter_names
           (sum, doc) => sum + (doc.data()['Total'] as int),
         );
 

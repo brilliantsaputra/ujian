@@ -58,7 +58,7 @@ class _CreateMenuPageState extends State<CreateMenuPage> {
           width: 100,
           child: Column(
             children: [
-              Text('Pilih Gambar'),
+              const Text('Pilih Gambar'),
               Expanded(
                 child: ListView.builder(
                   itemCount: gambar.length,
@@ -70,7 +70,7 @@ class _CreateMenuPageState extends State<CreateMenuPage> {
                         setState(() {});
                         Navigator.pop(context);
                       },
-                      child: Container(
+                      child: SizedBox(
                         height: 100,
                         width: 100,
                         child: Image.asset(
@@ -138,7 +138,7 @@ class _CreateMenuPageState extends State<CreateMenuPage> {
                       ),
                       Visibility(
                         visible: gambarDipilih.isNotEmpty,
-                        child: Text(
+                        child: const Text(
                           'Gambar Disimpan',
                         ),
                       ),
@@ -166,7 +166,7 @@ class _CreateMenuPageState extends State<CreateMenuPage> {
                 onPressed: () {
                   createData();
                 },
-                child: Text(
+                child: const Text(
                   'Simpan',
                 ),
               ),
